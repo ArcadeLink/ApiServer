@@ -25,4 +25,4 @@ builder.Services.AddCarter();
 var app = builder.Build();
 
 app.MapCarter();
-app.Run();
+// app.Run();
