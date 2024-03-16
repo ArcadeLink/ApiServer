@@ -1,6 +1,8 @@
-namespace ArcadeLinkOtpAuthProvider.Models;
+using Config.Net;
 
-public class IAPIConfig
+public interface IApiConfig
 {
-    
+    string ProjectId { get; }
+    string ProjectKey { get; }
+    string Endpoint { get; }
 }
