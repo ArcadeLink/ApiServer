@@ -5,6 +5,7 @@ using Appwrite.Models;
 using Carter;
 using Config.Net;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
 
 var settings = new ConfigurationBuilder<IApiConfig>()
     .UseAppConfig()
@@ -21,8 +22,9 @@ var client = new Client()
 // 创建 Web 服务 (使用 Carter)
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCarter();
+builder.Services.AddSingleton(client);
 
 var app = builder.Build();
 
 app.MapCarter();
-// app.Run();
+app.Run();
