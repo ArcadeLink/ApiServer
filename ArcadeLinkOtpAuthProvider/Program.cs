@@ -1,7 +1,6 @@
-﻿using System.Configuration;
-using Appwrite;
-using Appwrite.Services;
-using Appwrite.Models;
+﻿using Appwrite;
+using Appwrite.Enums;
+using ArcadeLinkOtpAuthProvider;
 using Carter;
 using Config.Net;
 using Microsoft.AspNetCore.Builder;
@@ -22,6 +21,11 @@ var client = new Client()
 // 创建 Web 服务 (使用 Carter)
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCarter();
+builder.Services.AddSingleton(new NameProvider()
+{
+    FirstNames = settings.FirstNames,
+    LastName = settings.LastNames
+});
 builder.Services.AddSingleton(client);
 
 var app = builder.Build();

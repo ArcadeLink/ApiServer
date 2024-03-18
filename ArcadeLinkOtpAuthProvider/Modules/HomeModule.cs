@@ -13,15 +13,35 @@ using HttpResponse = ArcadeLinkOtpAuthProvider.Models.HttpResponse;
 
 namespace ArcadeLinkOtpAuthProvider.Modules;
 
-public class HomeModule(Client client) : ICarterModule
+public class HomeModule(Client client, NameProvider provider) : ICarterModule
 {
     private Client Client { get; } = client;
+    private NameProvider NameProvider { get; } = provider;
 
     public void AddRoutes(IEndpointRouteBuilder app)
     {
         app.MapGet("/", () => "You're 59+20, 73!");
         
         app.MapGet("/refreshSecret", RefreshSecret);
+        app.MapGet("/getRandomName", GetRandomName);
+    }
+
+    private HttpResponse GetRandomName(HttpRequest request)
+    {
+        var firstNames = NameProvider.FirstNames.Split(",");
+        var lastNames = NameProvider.LastName.Split(",");
+        var random = new Random();
+        var firstName = firstNames[random.Next(firstNames.Length)].Replace(" ", string.Empty);
+        var lastName = lastNames[random.Next(lastNames.Length)].Replace(" ", string.Empty);
+        return new HttpResponse()
+        {
+            StatusCode = 0,
+            Message = "Success",
+            Data = new
+            {
+                name = firstName + lastName
+            }
+        };
     }
     
     private async Task<HttpResponse> RefreshSecret(HttpRequest request)
