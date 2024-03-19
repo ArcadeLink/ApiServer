@@ -1,12 +1,12 @@
-# API Documentation
+# API 文档
 
-## Home Module
+## Home 模块
 
 ### `GET /`
 
-Returns a string message.
+返回一个测试字符串消息。
 
-**Response:**
+**响应:**
 
 ```
 "You're 59+20, 73!"
@@ -14,73 +14,73 @@ Returns a string message.
 
 ### `GET /refreshSecret`
 
-Generates a new secret key for a user.
+为用户生成新的密钥。
 
-**Parameters:**
+**参数:**
 
-- `userId`: The user's ID.
-- `sessionId`: The user's session ID.
+- `userId`: 用户的 ID。
+- `sessionId`: 用户的会话 ID。
 
-**Response:**
+**响应:**
 
-- `statusCode`: 0 for success, -1 for failure.
-- `message`: "Success" or error message.
-- `data`: Contains the new secret key.
+- `statusCode`: 0 表示成功，-1 表示失败。
+- `message`: "Success" 或错误消息。
+- `data`: 包含新的密钥。
 
 ### `GET /getRandomName`
 
-Generates a random name.
+生成一个随机名称。
 
-**Response:**
+**响应:**
 
-- `statusCode`: 0 for success, -1 for failure.
-- `message`: "Success" or error message.
-- `data`: Contains the generated name.
+- `statusCode`: 0 表示成功，-1 表示失败。
+- `message`: "Success" 或错误消息。
+- `data`: 包含生成的名称。
 
-## Queue Module
+## Queue 模块
 
 ### `GET /queue/current`
 
-Gets the current queue.
+获取当前队列。
 
-**Parameters:**
+**参数:**
 
-- `showPassed`: 1 to show passed, 0 to not show.
-- `qth`: Queue ID.
+- `showPassed`: 1 表示显示已通过，0 表示不显示。
+- `qth`: 游戏厅的 ID（地理位置）。
 
-**Response:**
+**响应:**
 
-- `statusCode`: 0 for success, -1 for failure.
-- `message`: "Success" or error message.
-- `data`: Contains the queue documents.
+- `statusCode`: 0 表示成功，-1 表示失败。
+- `message`: "Success" 或错误消息。
+- `data`: 包含队列文档。
 
 ### `GET /queue/insert`
 
-Inserts a user into the queue.
+将用户插入队列。
 
-**Parameters:**
+**参数:**
 
-- `qth`: Queue ID.
-- `userId`: The user's ID.
-- `isRight`: Integer value.
+- `qth`: 游戏厅的 ID（地理位置）。
+- `userId`: 用户的 ID。
+- `isRight`: 插入左机或右机，当只有一个机器时，UI中仅显示一个机器，此参数指示排卡在左机还是右机。
 
-**Response:**
+**响应:**
 
-- `statusCode`: 0 for success, -1 for failure.
-- `message`: "Success" or error message.
-- `data`: Contains the queue ID.
+- `statusCode`: 0 表示成功，-1 表示失败。
+- `message`: "Success" 或错误消息。
+- `data`: 包含队列 ID。
 
 ### `GET /queue/pass`
 
-Passes a user in the queue.
+经过队列中的用户。
 
-**Parameters:**
+**参数:**
 
-- `qth`: Queue ID.
-- `userId`: The user's ID.
-- `queueId`: The queue's ID.
+- `qth`: 游戏厅的 ID（地理位置）。
+- `userId`: 用户的 ID。
+- `queueId`: 队列的 ID。
 
-**Response:**
+**响应:**
 
-- `statusCode`: 0 for success, -1 for failure.
-- `message`: "Success" or error message.
+- `statusCode`: 0 表示成功，-1 表示失败。
+- `message`: "Success" 或错误消息。
