@@ -33,7 +33,8 @@ public class QueueModule(Client client) : ICarterModule
             var databases = new Databases(Client);
             var queue = await databases.ListDocuments("alls", qth);
             var queueDocument = queue.Documents.FirstOrDefault(a =>
-                (string)a.Data["userId"] == userId && a.Data["queueId"].ToString()!.Equals(queueId));
+                (string)a.Data["userId"] == userId  // 用户ID
+                && a.Data["queueId"].ToString()!.Equals(queueId)); // 队列ID
             
             // 检测是否在队列中
             if (queueDocument == null)
@@ -84,6 +85,7 @@ public class QueueModule(Client client) : ICarterModule
         {
             var qth = request.Query.AsMultiple<string>("qth").First();
             var userId = request.Query.AsMultiple<string>("userId").First();
+            var isRight = request.Query.AsMultiple<int>("isRight").FirstOrDefault();
             
             var users = new Users(Client);
             var user = await users.Get(userId);
@@ -93,7 +95,9 @@ public class QueueModule(Client client) : ICarterModule
             var queue = await databases.ListDocuments("alls", qth);
             
             // 检测重复
-            if (queue.Documents.Any(a => (string)a.Data["userId"] == userId && !(bool)a.Data["passed"]))
+            if (queue.Documents.Any(a => 
+                    (string)a.Data["userId"] == userId // 用户ID是否有重复
+                    && !(bool)a.Data["passed"]))    // 是否已经通过
             {
                 return new HttpResponse()
                 {
@@ -111,6 +115,7 @@ public class QueueModule(Client client) : ICarterModule
                 { "queueId", queueLength + 1 },
                 { "name", user.Name },
                 { "userId", userId },
+                { "isRight", isRight},
                 { "passed", false }
             });
 

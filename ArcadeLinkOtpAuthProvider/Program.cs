@@ -55,6 +55,7 @@ foreach (var locationDocument in locations.Documents)
     await db.CreateIntegerAttribute("alls", collectionName, "queueId", true);
     await db.CreateStringAttribute("alls", collectionName, "name", 32, true);
     await db.CreateStringAttribute("alls", collectionName, "userId",  64, true);
+    await db.CreateIntegerAttribute("alls", collectionName, "isRight", true);
     await db.CreateBooleanAttribute("alls", collectionName, "passed", true);
     
     // 创建队列索引
