@@ -2,11 +2,8 @@
 using Appwrite.Enums;
 using Appwrite.Services;
 using ArcadeLinkOtpAuthProvider;
-using ArcadeLinkOtpAuthProvider.Modules;
 using Carter;
 using Config.Net;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -68,8 +65,6 @@ foreach (var locationDocument in locations.Documents)
 // 创建 Web 服务 (使用 Carter)
 Console.Out.WriteLine("Creating web server");
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddControllers();
-
 builder.Services.AddCarter();
 builder.Services.AddSingleton(new NameDictionary()
 {
@@ -79,6 +74,6 @@ builder.Services.AddSingleton(new NameDictionary()
 builder.Services.AddSingleton(client);
 
 var app = builder.Build();
-app.UseAuthorization();
+
 app.MapCarter();
 app.Run();
