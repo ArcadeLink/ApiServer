@@ -24,7 +24,7 @@ var client = new Client()
 Console.Out.WriteLine("Initializing database");
 var db = new Databases(client);
 var locations = await db.ListDocuments("alls", "locations");
-var collections = db.ListCollections("alls");
+var collections = await db.ListCollections("alls");
 
 foreach (var locationDocument in locations.Documents)
 {
@@ -37,7 +37,7 @@ foreach (var locationDocument in locations.Documents)
     
     // 检查数据库是否存在, 如果存在则清空
     var collectionName = locationDocument.Id;
-    if (collections.Result.Collections.Any(a=> a.Id == collectionName))
+    if (collections.Collections.Any(a=> a.Id == collectionName))
     {
         var documents = await db.ListDocuments("alls", collectionName);
         documents.Documents.ForEach(d => db.DeleteDocument("alls", d.CollectionId, d.Id));
