@@ -1,5 +1,6 @@
 using Appwrite;
 using Appwrite.Services;
+using ArcadeLinkOtpAuthProvider.Services;
 using Carter;
 using Carter.Request;
 using Microsoft.AspNetCore.Builder;
@@ -21,6 +22,7 @@ public class HomeModule(Client client, NameDictionary dictionary) : ICarterModul
         app.MapGet("/", () => "You're 59+20, 73!");
         
         app.MapGet("/refreshSecret", RefreshSecret);
+        app.MapGet("/safeSetName", SafeSetName);
         app.MapGet("/getRandomName", GetRandomName);
     }
     
@@ -42,6 +44,88 @@ public class HomeModule(Client client, NameDictionary dictionary) : ICarterModul
         };
     }
     
+    private async Task<bool> VerifySession(string userId, string sessionId)
+    {
+        // 创建一个新的 Appwrite 客户端
+        var account = new Users(Client);
+        
+        // 获取当前会话
+        try
+        {
+            var list = await account.ListSessions(userId);
+            if (list.Sessions.All(a => a.Id != sessionId))
+            {
+                return false;
+            }
+
+            return true;
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+    }
+
+    private async Task<HttpResponse> SafeSetName(HttpRequest request)
+    {
+        var userId = request.Query.AsMultiple<string>("userId").First();
+        var sessionId = request.Query.AsMultiple<string>("sessionId").First();
+        var name = request.Query.AsMultiple<string>("name").First();
+        
+        var isVerified = await VerifySession(userId, sessionId);
+        
+        // 验证会话
+        if (!isVerified)
+        {
+            return new HttpResponse()
+            {
+                StatusCode = -1,
+                Message = "Invalid session",
+            };
+        }
+        
+        // 合规验证
+        var result = BaiduTextVerifyService.Verify(name);
+        if (result.conclusionType != 1)
+        {
+            return new HttpResponse()
+            {
+                StatusCode = -1,
+                Message = result.conclusion,
+            };
+        }
+        
+        // 更新用户的名字
+        var account = new Users(Client);
+        try
+        {
+            await account.UpdatePrefs(
+                userId,
+                prefs: new Dictionary<string, string>
+                {
+                    { "name", name }
+                });
+        }
+        catch (Exception e)
+        {
+            return new HttpResponse()
+            {
+                StatusCode = -1,
+                Message = e.Message
+            };
+        }
+        
+        return new HttpResponse()
+        {
+            StatusCode = 0,
+            Message = "Success",
+            Data = new
+            {
+                name
+            }
+        };
+    }
+    
     private async Task<HttpResponse> RefreshSecret(HttpRequest request)
     {
         // 生成一个随机的密钥
@@ -56,24 +140,14 @@ public class HomeModule(Client client, NameDictionary dictionary) : ICarterModul
         var sessionId = request.Query.AsMultiple<string>("sessionId").First();
         
         // 获取当前会话
-        try
-        {
-            var list = await account.ListSessions(userId);
-            if (list.Sessions.All(a => a.Id != sessionId))
-            {
-                return new HttpResponse()
-                {
-                    StatusCode = -1,
-                    Message = "Invalid session"
-                };
-            }
-        }
-        catch (Exception e)
+        var isVerified = await VerifySession(userId, sessionId);
+
+        if (!isVerified)
         {
             return new HttpResponse()
             {
                 StatusCode = -1,
-                Message = e.Message
+                Message = "Invalid session",
             };
         }
         
