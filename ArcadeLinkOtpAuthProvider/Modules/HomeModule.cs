@@ -99,12 +99,7 @@ public class HomeModule(Client client, NameDictionary dictionary) : ICarterModul
         var account = new Users(Client);
         try
         {
-            await account.UpdatePrefs(
-                userId,
-                prefs: new Dictionary<string, string>
-                {
-                    { "name", name }
-                });
+            await account.UpdateName(userId, name);
         }
         catch (Exception e)
         {
