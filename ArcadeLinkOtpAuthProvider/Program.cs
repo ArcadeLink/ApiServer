@@ -32,7 +32,7 @@ foreach (var locationDocument in locations.Documents)
     locationDocument.Data.TryGetValue("is_queue_enabled", out var isQueueEnabled);
     if (!(bool)(isQueueEnabled ?? false))
     {
-        break;
+        continue;
     }
     
     // 检查数据库是否存在, 如果存在则清空
@@ -41,7 +41,7 @@ foreach (var locationDocument in locations.Documents)
     {
         var documents = await db.ListDocuments("alls", collectionName);
         documents.Documents.ForEach(d => db.DeleteDocument("alls", d.CollectionId, d.Id));
-        break;
+        continue;
     }
     
     // 创建队列数据库
@@ -57,6 +57,7 @@ foreach (var locationDocument in locations.Documents)
     await db.CreateStringAttribute("alls", collectionName, "userId",  64, true);
     await db.CreateIntegerAttribute("alls", collectionName, "isRight", true);
     await db.CreateBooleanAttribute("alls", collectionName, "passed", true);
+    await db.CreateStringAttribute("alls", collectionName, "url", 256, true);
     
     // 创建队列索引
     await db.CreateIndex("alls", collectionName, "index_queueId", IndexType.Unique, ["queueId"]);

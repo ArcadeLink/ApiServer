@@ -106,6 +106,22 @@ public class QueueModule(Client client) : ICarterModule
                 };
             }
             
+            // 获取用户设置中的卡面设置
+            var cardUrl = "0";
+            try
+            {
+                var userSettings = user.Prefs.Data;
+                var cardFace = userSettings.TryGetValue("cardFace", out var setting) ? setting : 0;
+                var cardFaces = await databases.ListDocuments("alls", "cardGtemplates");
+                var cardFaceDocument = cardFaces.Documents.FirstOrDefault(a => a.Id == cardFace.ToString());
+                cardUrl = cardFaceDocument != null ? (string)cardFaceDocument.Data["url"] : "";
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+            
             // 获取队列长度
             var queueLength = queue.Documents.Count;
             
@@ -116,7 +132,8 @@ public class QueueModule(Client client) : ICarterModule
                 { "name", user.Name },
                 { "userId", userId },
                 { "isRight", isRight},
-                { "passed", false }
+                { "passed", false },
+                { "url", cardUrl}
             });
 
             // 返回队列长度
