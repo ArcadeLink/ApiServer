@@ -1,3 +1,4 @@
+using System.Globalization;
 using Appwrite;
 using Appwrite.Services;
 using ArcadeLinkOtpAuthProvider.Services;
@@ -153,7 +154,8 @@ public class HomeModule(Client client, NameDictionary dictionary) : ICarterModul
                 userId,
                 prefs: new Dictionary<string, string>
                 {
-                    { "otpSecret", base32String }
+                    { "otpSecret", base32String },
+                    { "lastUpdateTime" , DateTime.Now.ToString(CultureInfo.InvariantCulture)}
                 });
         }
         catch (Exception e)
