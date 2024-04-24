@@ -1,3 +1,4 @@
+using System.Text;
 using Appwrite;
 using Appwrite.Services;
 using Carter;
@@ -22,6 +23,7 @@ public class VideoModule (Client client) : ICarterModule
         var locationId = context.Request.Query["locationId"];
         var locationKey = context.Request.Query["locationKey"];
         
+        
         var db = new Databases(Client);
         var location = await db.GetDocument("alls", "locations", locationId!);
 
@@ -34,7 +36,9 @@ public class VideoModule (Client client) : ICarterModule
             };
         }
         
-        var url = context.Request.Query["url"];
+        var urlUnsafe = context.Request.Query["url"];
+        var urlBytes = Convert.FromBase64String(urlUnsafe.ToString().Replace('-', '+').Replace('_', '/'));
+        var url = Encoding.UTF8.GetString(urlBytes);
         var userId = context.Request.Query["userId"];
         var doc = await db.CreateDocument("alls", "videos", ID.Unique(),
             new Dictionary<string,object>()
@@ -42,7 +46,7 @@ public class VideoModule (Client client) : ICarterModule
                 { "video_length", 0 },
                 { "url", url },
                 { "locations", location.Id },
-                { "user_id", userId },
+                { "user_id", userId.ToString() },
             });
 
         return new HttpResponse()
