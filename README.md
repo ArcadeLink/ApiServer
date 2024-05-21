@@ -1,5 +1,7 @@
 # API 文档
 
+项目已经停止维护，请移步 `ArcadeLink.Api`
+
 ## Home 模块
 
 ### `GET /`
